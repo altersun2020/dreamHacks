@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { HOME_ISLAND, islands } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
 
@@ -38,13 +39,16 @@ export function CrossingTransition() {
   }, []);
 
   if (phase === "done") return null;
+  // Portalled for the same reason as the story viewer: AppShell's `relative
+  // z-10` panel boxes in any z-index set inside it.
+  if (typeof document === "undefined") return null;
 
-  return (
+  return createPortal(
     <div
       role="presentation"
       onClick={() => setPhase("done")}
       className={cn(
-        "fixed inset-0 z-[90] overflow-hidden transition-opacity duration-500",
+        "fixed inset-0 z-[90] flex items-center justify-center overflow-hidden transition-opacity duration-500",
         phase === "network" && "opacity-100",
       )}
       style={{
@@ -52,6 +56,11 @@ export function CrossingTransition() {
           "radial-gradient(120% 100% at 50% 45%, #21c3dd 0%, #058ba6 45%, #033b52 100%)",
       }}
     >
+      {/* Everything below is laid out against a phone-width stage, not the
+          viewport. On a wide monitor the 100x100 network scaled up 20x, which
+          turned the home isle into a giant white disc and pushed the outer
+          isles off both edges. */}
+      <div className="relative h-full w-full max-w-[620px] overflow-hidden">
       {/* Pool caustics wobbling over everything */}
       <div className="caustics absolute inset-0 opacity-40" />
 
@@ -83,8 +92,8 @@ export function CrossingTransition() {
       {phase === "network" && (
         <svg
           viewBox="0 0 100 100"
-          className="absolute inset-0 h-full w-full"
-          preserveAspectRatio="xMidYMid slice"
+          className="absolute inset-x-0 top-[8%] mx-auto h-[62%] w-full"
+          preserveAspectRatio="xMidYMid meet"
           aria-hidden="true"
         >
           {NODES.slice(1).map((n, i) => (
@@ -148,7 +157,9 @@ export function CrossingTransition() {
         >
           You&rsquo;re in the network now
         </p>
+        </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

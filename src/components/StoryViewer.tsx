@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { ChevronLeft, ChevronRight, Timer, X } from "lucide-react";
 import { Avatar } from "@/components/Avatar";
 import type { TideLog } from "@/lib/types";
@@ -97,125 +98,139 @@ export function StoryViewer({
   }
 
   if (!log) return null;
+  // Portalled to the body. AppShell wraps page content in a `relative z-10`
+  // panel, which is a stacking context — inside it the viewer's z-index is
+  // scoped below the z-50 header and tab bar, so both painted over the story.
+  if (typeof document === "undefined") return null;
 
-  return (
+  // The scrim covers the screen, but the story stays inside a phone-width card.
+  // Full-bleed stretched a single photo across a desktop monitor and thinned the
+  // progress bars into an invisible 2000px hairline.
+  return createPortal(
     <div
       role="dialog"
       aria-modal="true"
       aria-label={`Tide Log from ${log.author}`}
-      className="animate-fade-in fixed inset-0 z-[70] flex flex-col bg-lagoon-900"
+      className="animate-fade-in fixed inset-0 z-[70] flex items-center justify-center bg-lagoon-900/80 backdrop-blur-sm sm:p-6"
+      onClick={onClose}
     >
-      {/* Segmented progress */}
-      <div className="flex gap-1 px-3 pt-3">
-        {logs.map((l, i) => (
-          <div
-            key={l.id}
-            className="h-0.5 flex-1 overflow-hidden rounded-full bg-white/25"
-          >
-            <div
-              className="h-full rounded-full bg-white transition-[width] duration-75 ease-linear"
-              style={{
-                width:
-                  i < index ? "100%" : i === index ? `${progress}%` : "0%",
-              }}
-            />
-          </div>
-        ))}
-      </div>
-
-      <header className="flex items-center gap-3 px-4 py-3">
-        <Avatar name={log.author} size="sm" className="ring-2 ring-white/30" />
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-semibold text-white">
-            {log.author}
-          </p>
-          <p className="truncate text-[11px] text-white/60">
-            {log.island} · {formatRelativeTime(log.createdAt)}
-          </p>
-        </div>
-        <span className="flex items-center gap-1 rounded-full bg-white/15 px-2 py-1 text-[10px] font-medium text-white/90">
-          <Timer className="h-3 w-3" />
-          {formatTimeRemaining(log.expiresAt)}
-        </span>
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Close Tide Logs"
-          className="rounded-full p-1.5 text-white/80 transition-colors hover:bg-white/15 hover:text-white"
-        >
-          <X className="h-5 w-5" />
-        </button>
-      </header>
-
-      {/* Frame */}
       <div
-        className="relative flex flex-1 items-center justify-center overflow-hidden"
-        onPointerDown={startHold}
-        onPointerUp={endHold}
-        onPointerLeave={endHold}
+        onClick={(e) => e.stopPropagation()}
+        className="relative flex h-full w-full max-w-[420px] flex-col overflow-hidden bg-lagoon-900 shadow-2xl sm:h-[min(88vh,760px)] sm:rounded-3xl"
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-lagoon-700 via-lagoon-800 to-teal-800" />
-        {log.photo ? (
-          <>
-            {/* eslint-disable-next-line @next/next/no-img-element -- local static asset */}
-            <img
-              src={log.photo}
-              alt=""
-              className={cn(
-                "absolute inset-0 h-full w-full object-cover transition-transform duration-700",
-                paused ? "scale-[1.03]" : "scale-100",
-              )}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30" />
-          </>
-        ) : (
-          <span
-            role="img"
-            aria-label={log.label}
-            className={cn(
-              "relative block px-8 text-center text-[7rem] leading-none drop-shadow-2xl transition-transform",
-              paused ? "scale-95" : "scale-100",
-            )}
+        {/* Segmented progress */}
+        <div className="flex gap-1 px-3 pt-3">
+          {logs.map((l, i) => (
+            <div
+              key={l.id}
+              className="h-0.5 flex-1 overflow-hidden rounded-full bg-white/25"
+            >
+              <div
+                className="h-full rounded-full bg-white transition-[width] duration-75 ease-linear"
+                style={{
+                  width:
+                    i < index ? "100%" : i === index ? `${progress}%` : "0%",
+                }}
+              />
+            </div>
+          ))}
+        </div>
+
+        <header className="flex items-center gap-3 px-4 py-3">
+          <Avatar name={log.author} size="sm" className="ring-2 ring-white/30" />
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-semibold text-white">
+              {log.author}
+            </p>
+            <p className="truncate text-[11px] text-white/60">
+              {log.island} · {formatRelativeTime(log.createdAt)}
+            </p>
+          </div>
+          <span className="flex items-center gap-1 rounded-full bg-white/15 px-2 py-1 text-[10px] font-medium text-white/90">
+            <Timer className="h-3 w-3" />
+            {formatTimeRemaining(log.expiresAt)}
+          </span>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close Tide Logs"
+            className="rounded-full p-1.5 text-white/80 transition-colors hover:bg-white/15 hover:text-white"
           >
-            {log.preview}
-          </span>
-        )}
+            <X className="h-5 w-5" />
+          </button>
+        </header>
 
-        {/* Tap zones */}
-        <button
-          type="button"
-          onClick={goPrev}
-          aria-label="Previous Tide Log"
-          className="group absolute inset-y-0 left-0 flex w-1/3 items-center justify-start pl-3"
+        {/* Frame */}
+        <div
+          className="relative flex flex-1 items-center justify-center overflow-hidden"
+          onPointerDown={startHold}
+          onPointerUp={endHold}
+          onPointerLeave={endHold}
         >
-          <ChevronLeft className="h-6 w-6 text-white/0 transition-colors group-hover:text-white/50" />
-        </button>
-        <button
-          type="button"
-          onClick={goNext}
-          aria-label="Next Tide Log"
-          className="group absolute inset-y-0 right-0 flex w-1/3 items-center justify-end pr-3"
-        >
-          <ChevronRight className="h-6 w-6 text-white/0 transition-colors group-hover:text-white/50" />
-        </button>
+          <div className="absolute inset-0 bg-gradient-to-br from-lagoon-700 via-lagoon-800 to-teal-800" />
+          {log.photo ? (
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element -- local static asset */}
+              <img
+                src={log.photo}
+                alt=""
+                className={cn(
+                  "absolute inset-0 h-full w-full object-cover transition-transform duration-700",
+                  paused ? "scale-[1.03]" : "scale-100",
+                )}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30" />
+            </>
+          ) : (
+            <span
+              role="img"
+              aria-label={log.label}
+              className={cn(
+                "relative block px-8 text-center text-[7rem] leading-none drop-shadow-2xl transition-transform",
+                paused ? "scale-95" : "scale-100",
+              )}
+            >
+              {log.preview}
+            </span>
+          )}
 
-        {paused && (
-          <span className="absolute bottom-4 rounded-full bg-black/40 px-3 py-1 text-[11px] font-medium text-white/90">
-            Paused
-          </span>
-        )}
-      </div>
+          {/* Tap zones */}
+          <button
+            type="button"
+            onClick={goPrev}
+            aria-label="Previous Tide Log"
+            className="group absolute inset-y-0 left-0 flex w-1/3 items-center justify-start pl-3"
+          >
+            <ChevronLeft className="h-6 w-6 text-white/0 transition-colors group-hover:text-white/50" />
+          </button>
+          <button
+            type="button"
+            onClick={goNext}
+            aria-label="Next Tide Log"
+            className="group absolute inset-y-0 right-0 flex w-1/3 items-center justify-end pr-3"
+          >
+            <ChevronRight className="h-6 w-6 text-white/0 transition-colors group-hover:text-white/50" />
+          </button>
 
-      <footer className="bg-gradient-to-t from-black/50 to-transparent px-5 pb-8 pt-6">
-        <p className="text-xs font-semibold uppercase tracking-wider text-teal-300">
-          {log.label}
-        </p>
-        {log.caption && (
-          <p className="mt-1 text-[15px] leading-relaxed text-white">
-            {log.caption}
+          {paused && (
+            <span className="absolute bottom-4 rounded-full bg-black/40 px-3 py-1 text-[11px] font-medium text-white/90">
+              Paused
+            </span>
+          )}
+        </div>
+
+        <footer className="bg-gradient-to-t from-black/50 to-transparent px-5 pb-8 pt-6">
+          <p className="text-xs font-semibold uppercase tracking-wider text-teal-300">
+            {log.label}
           </p>
-        )}
-      </footer>
-    </div>
+          {log.caption && (
+            <p className="mt-1 text-[15px] leading-relaxed text-white">
+              {log.caption}
+            </p>
+          )}
+        </footer>
+      </div>
+    </div>,
+    document.body,
   );
 }
