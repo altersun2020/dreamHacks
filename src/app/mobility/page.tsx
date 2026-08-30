@@ -1,132 +1,165 @@
 "use client";
 
-import { AlertTriangle, CloudRain, Ship, Waves } from "lucide-react";
-import { Header } from "@/components/Header";
-import { useOnlineStatus } from "@/components/OfflineProvider";
-import { boatTrips, weatherAlerts, HOME_ISLAND } from "@/lib/mock-data";
+import { CloudRain, Radio, Waves, Wind } from "lucide-react";
+import { PageBanner } from "@/components/app/PageBanner";
+import { useFeed } from "@/contexts/FeedContext";
+import { boatTrips, weatherAlerts } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
 
-const alertStyles = {
-  info: "border-sky-500/30 bg-sky-500/10",
-  warning: "border-amber-500/30 bg-amber-500/10",
-  critical: "border-red-500/30 bg-red-500/10",
+const alertIcon = { tide: Waves, storm: CloudRain, wind: Wind };
+const alertTone = {
+  info: "bg-sky-50 border-sky-200 text-sky-900",
+  warning: "bg-amber-50 border-amber-200 text-amber-900",
+  critical: "bg-red-50 border-red-200 text-red-900",
 };
 
-const alertIcons = {
-  tide: Waves,
-  storm: CloudRain,
-  wind: AlertTriangle,
-};
+/** "Departs Aug 31, 7am" → "07:00" for the board. */
+function boardTime(departure: string): string {
+  const m = departure.match(/(\d{1,2})(?::(\d{2}))?\s*(am|pm)/i);
+  if (!m) return departure.slice(0, 5);
+  let h = parseInt(m[1], 10);
+  const min = m[2] ?? "00";
+  if (/pm/i.test(m[3]) && h !== 12) h += 12;
+  if (/am/i.test(m[3]) && h === 12) h = 0;
+  return `${String(h).padStart(2, "0")}:${min}`;
+}
 
 export default function MobilityPage() {
-  const isOnline = useOnlineStatus();
+  const { actedPostIds: booked, commitTo } = useFeed();
 
   return (
     <>
-      <Header
+      <PageBanner
         title="Coastal Mobility"
-        subtitle={`${HOME_ISLAND} · boats, tides & weather`}
-        isOnline={isOnline}
+        blurb="Who’s sailing where, and what the water is doing."
+        motif="tide"
       />
-      <main className="mx-auto max-w-lg flex-1 space-y-6 px-4 py-4 pb-24">
-        <section>
-          <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-sand-200">
-            <Waves className="h-4 w-4 text-seafoam-400" />
-            Tide & Weather Alerts
-          </h2>
-          <div className="space-y-2">
-            {weatherAlerts.map((alert) => {
-              const Icon = alertIcons[alert.type];
-              return (
-                <div
-                  key={alert.id}
-                  className={cn(
-                    "flex gap-3 rounded-xl border p-3",
-                    alertStyles[alert.severity],
-                  )}
-                >
-                  <Icon className="mt-0.5 h-4 w-4 shrink-0 text-amber-300" />
-                  <div>
-                    <p className="text-sm text-sand-200">{alert.message}</p>
-                    <p className="mt-1 text-xs text-sand-500">
-                      Valid until {alert.validUntil}
+
+      {/* Conditions ticker */}
+      <section className="mb-6 space-y-2">
+        {weatherAlerts.map((alert) => {
+          const Icon = alertIcon[alert.type];
+          return (
+            <div
+              key={alert.id}
+              className={cn(
+                "flex items-start gap-3 rounded-2xl border-2 px-4 py-3",
+                alertTone[alert.severity],
+              )}
+            >
+              <Icon className="mt-0.5 h-5 w-5 shrink-0" />
+              <p className="min-w-0 text-[15px] font-bold leading-snug">
+                {alert.message}
+              </p>
+            </div>
+          );
+        })}
+      </section>
+
+      {/* Departure board */}
+      <section>
+        <h2 className="mb-3 text-[20px] font-extrabold tracking-tight text-ink">
+          Departures
+        </h2>
+
+        {/* A painted harbour board: sun-bleached planks, teal ink, rope rules */}
+        <div
+          className="overflow-hidden rounded-3xl border-4 border-[#c8a97a] shadow-[inset_0_2px_0_rgba(255,255,255,0.6)]"
+          style={{
+            background:
+              "repeating-linear-gradient(180deg,#f7efdd_0px,#f7efdd_34px,#f2e7d0_34px,#f2e7d0_35px), linear-gradient(180deg,#f9f2e2,#f1e5cc)",
+          }}
+        >
+          {boatTrips.map((trip, i) => {
+            const mine = booked.has(trip.id);
+            const left = trip.seats - trip.seatsTaken - (mine ? 1 : 0);
+            const full = left <= 0;
+            return (
+              <div key={trip.id}>
+                {i > 0 && (
+                  /* Rope rule between sailings */
+                  <svg
+                    viewBox="0 0 300 6"
+                    preserveAspectRatio="none"
+                    className="h-1.5 w-full"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M0 3 q5 -3 10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0"
+                      fill="none"
+                      stroke="#c8a97a"
+                      strokeWidth="2.5"
+                    />
+                  </svg>
+                )}
+
+                <div className="flex items-stretch gap-4 px-4 py-4">
+                  <div className="w-[78px] shrink-0 text-center">
+                    <p className="font-mono text-[21px] font-bold leading-none tabular-nums text-[#0d6357]">
+                      {boardTime(trip.departure)}
+                    </p>
+                    <p className="mt-1 text-[10px] font-extrabold uppercase tracking-wider text-ink-mute">
+                      {trip.departure.replace(/^Departs\s*/i, "").split(",")[0]}
                     </p>
                   </div>
-                </div>
-              );
-            })}
-          </div>
-        </section>
 
-        <section>
-          <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-sand-200">
-            <Ship className="h-4 w-4 text-seafoam-400" />
-            Boat Pool & Water Taxi
-          </h2>
-          <div className="space-y-3">
-            {boatTrips.map((trip) => {
-              const available = trip.seats - trip.seatsTaken;
-              return (
-                <div
-                  key={trip.id}
-                  className="rounded-xl border border-ocean-700/30 bg-ocean-900/40 p-4"
-                >
-                  <div className="mb-1 flex items-center justify-between">
-                    <h3 className="font-semibold text-sand-100">
-                      {trip.vessel}
-                    </h3>
-                    <span
-                      className={cn(
-                        "rounded-full px-2 py-0.5 text-[10px] font-medium",
-                        trip.type === "passenger"
-                          ? "bg-sky-500/20 text-sky-300"
-                          : "bg-amber-500/20 text-amber-300",
-                      )}
-                    >
-                      {trip.type === "passenger" ? "Passenger" : "Supply"}
-                    </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-[16px] font-extrabold leading-tight text-[#173b34]">
+                      {trip.route}
+                    </p>
+                    <p className="mt-1 truncate text-[13px] font-semibold text-ink-mute">
+                      {trip.vessel} ·{" "}
+                      <span className={full ? "text-ink-mute" : "text-accent"}>
+                        {full ? "Full" : `${left} free`}
+                      </span>
+                    </p>
                   </div>
-                  <p className="text-xs text-sand-500">
-                    Captain {trip.captain}
-                  </p>
-                  <p className="mt-1 text-sm text-sand-300">{trip.route}</p>
-                  <div className="mt-2 flex items-center justify-between">
-                    <span className="text-xs text-sand-400">
-                      Departs {trip.departure}
-                    </span>
-                    <span className="text-xs font-medium text-seafoam-300">
-                      {available} seat{available !== 1 ? "s" : ""} left
-                    </span>
-                  </div>
+
                   <button
                     type="button"
-                    className="mt-3 w-full rounded-lg bg-seafoam-500/20 py-2 text-sm font-medium text-seafoam-300 hover:bg-seafoam-500/30"
+                    onClick={() =>
+                      commitTo(
+                        trip.id,
+                        trip.type === "passenger"
+                          ? "Seat reserved"
+                          : "Pickup requested",
+                      )
+                    }
+                    disabled={mine || full}
+                    className={cn(
+                      "btn shrink-0 self-center px-5 py-2.5 text-[13px]",
+                      mine ? "btn-done" : full ? "" : "btn-primary",
+                    )}
                   >
-                    {trip.type === "passenger"
-                      ? "Reserve Seat"
-                      : "Request Pickup"}
+                    {mine ? "Aboard" : full ? "Full" : "Book"}
                   </button>
                 </div>
-              );
-            })}
-          </div>
-        </section>
+              </div>
+            );
+          })}
+        </div>
+      </section>
 
-        <section className="rounded-xl border border-ocean-700/30 bg-gradient-to-br from-ocean-900/60 to-ocean-950 p-4">
-          <h3 className="mb-2 text-sm font-semibold text-sand-200">
-            Low-Bandwidth Mesh Sync
-          </h3>
-          <p className="text-sm text-sand-400">
-            When cell or power grids fail, IsleHelp syncs via Bluetooth and local
-            Wi-Fi mesh. Posts and actions queue in IndexedDB and propagate when
-            neighbors come within range.
-          </p>
-          <div className="mt-3 flex items-center gap-2 text-xs text-seafoam-400">
-            <span className="h-2 w-2 animate-pulse rounded-full bg-seafoam-400" />
-            Mesh listener active · 2 peers nearby
-          </div>
-        </section>
-      </main>
+      {/* Mesh status */}
+      <section className="mt-6 rounded-3xl border-2 border-dashed border-accent/30 bg-accent-soft p-5">
+        <div className="flex items-center gap-2">
+          <Radio className="h-5 w-5 text-accent" />
+          <h2 className="text-[16px] font-extrabold text-ink">
+            Low-bandwidth mesh
+          </h2>
+        </div>
+        <p className="mt-1.5 text-[14px] leading-relaxed text-ink-soft">
+          Grid down? Everything you tap queues here and travels by Bluetooth
+          when neighbours come close.
+        </p>
+        <div className="mt-3 flex items-center gap-2 text-[13px] font-bold text-accent">
+          <span className="relative flex h-2.5 w-2.5">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-60" />
+            <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-accent" />
+          </span>
+          Listener active · 2 peers nearby
+        </div>
+      </section>
     </>
   );
 }

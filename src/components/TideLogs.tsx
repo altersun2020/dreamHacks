@@ -1,43 +1,117 @@
 "use client";
 
-import type { TideLog } from "@/lib/types";
+import { useCallback, useState } from "react";
 import { Plus } from "lucide-react";
+import { AddTideLogSheet } from "@/components/AddTideLogSheet";
+import { StoryViewer } from "@/components/StoryViewer";
+import { useFeed } from "@/contexts/FeedContext";
+import { cn, formatTimeRemaining } from "@/lib/utils";
 
-interface TideLogsProps {
-  logs: TideLog[];
-}
+export function TideLogs() {
+  const { ready, tideLogs, seenLogIds, markSeen } = useFeed();
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [composing, setComposing] = useState(false);
 
-export function TideLogs({ logs }: TideLogsProps) {
+  // Stable identity so the viewer's frame timer is not reset on every render.
+  const closeViewer = useCallback(() => setOpenIndex(null), []);
+
+  // Unwatched stories come first, the way a story tray normally sorts.
+  const ordered = [...tideLogs].sort((a, b) => {
+    const aSeen = seenLogIds.has(a.id) ? 1 : 0;
+    const bSeen = seenLogIds.has(b.id) ? 1 : 0;
+    if (aSeen !== bSeen) return aSeen - bSeen;
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
+
   return (
-    <section>
-      <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-sand-500">
-        Tide Logs · 24hr
-      </h2>
-      <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+    <section aria-label="Tide Logs">
+      <div className="mb-3 flex items-baseline justify-between">
+        <h2 className="text-xs font-bold uppercase tracking-wider text-shell-500">
+          Tide Logs
+        </h2>
+        <span className="text-[10px] font-medium text-shell-400">
+          Gone in 24h
+        </span>
+      </div>
+
+      <div className="flex gap-3.5 overflow-x-auto pb-1 scrollbar-hide">
         <button
           type="button"
+          onClick={() => setComposing(true)}
           className="flex shrink-0 flex-col items-center gap-1.5"
         >
-          <div className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-dashed border-seafoam-500/40 bg-ocean-900/40 text-seafoam-400 transition-colors hover:border-seafoam-400/60">
+          <span className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-dashed border-teal-300 bg-teal-50 text-teal-600 transition-colors hover:border-teal-400 hover:bg-teal-100">
             <Plus className="h-6 w-6" />
-          </div>
-          <span className="text-[10px] font-medium text-sand-400">Add Log</span>
+          </span>
+          <span className="text-[10px] font-semibold text-shell-600">
+            Add Log
+          </span>
         </button>
-        {logs.map((log) => (
-          <button
-            key={log.id}
-            type="button"
-            className="flex shrink-0 flex-col items-center gap-1.5"
-          >
-            <div className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-seafoam-400/60 bg-gradient-to-br from-ocean-800 to-ocean-900 text-2xl ring-2 ring-ocean-950 ring-offset-2 ring-offset-ocean-950">
-              {log.preview}
+
+        {!ready &&
+          [0, 1, 2, 3].map((i) => (
+            <div key={i} className="flex shrink-0 flex-col items-center gap-1.5">
+              <span className="h-16 w-16 animate-pulse rounded-full bg-shell-200" />
+              <span className="h-2.5 w-12 animate-pulse rounded bg-shell-200" />
             </div>
-            <span className="max-w-[64px] truncate text-[10px] font-medium text-sand-300">
-              {log.label}
-            </span>
-          </button>
-        ))}
+          ))}
+
+        {ready && ordered.length === 0 && (
+          <p className="flex h-16 items-center text-xs text-shell-500">
+            No Tide Logs right now — the last ones have washed out.
+          </p>
+        )}
+
+        {ordered.map((log) => {
+          const seen = seenLogIds.has(log.id);
+          return (
+            <button
+              key={log.id}
+              type="button"
+              onClick={() =>
+                setOpenIndex(ordered.findIndex((l) => l.id === log.id))
+              }
+              className="flex shrink-0 flex-col items-center gap-1.5"
+              title={`${log.label} · ${formatTimeRemaining(log.expiresAt)}`}
+            >
+              <span
+                className={cn(
+                  "flex h-16 w-16 items-center justify-center rounded-full p-[2.5px]",
+                  seen ? "tide-ring-seen" : "tide-ring-unseen",
+                )}
+              >
+                <span
+                  className={cn(
+                    "flex h-full w-full items-center justify-center rounded-full bg-white text-2xl",
+                    seen && "opacity-70",
+                  )}
+                >
+                  {log.preview}
+                </span>
+              </span>
+              <span
+                className={cn(
+                  "max-w-[64px] truncate text-[10px] font-semibold",
+                  seen ? "text-shell-400" : "text-lagoon-800",
+                )}
+              >
+                {log.label}
+              </span>
+            </button>
+          );
+        })}
       </div>
+
+      {openIndex !== null && ordered[openIndex] && (
+        <StoryViewer
+          logs={ordered}
+          startIndex={openIndex}
+          onClose={closeViewer}
+          onSeen={markSeen}
+        />
+      )}
+
+      {composing && <AddTideLogSheet onClose={() => setComposing(false)} />}
     </section>
   );
 }

@@ -1,52 +1,29 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { posts as mockPosts } from "@/lib/mock-data";
-import { cachePosts } from "@/lib/db";
+import { useSyncExternalStore } from "react";
 
+function subscribe(onChange: () => void) {
+  window.addEventListener("online", onChange);
+  window.addEventListener("offline", onChange);
+  return () => {
+    window.removeEventListener("online", onChange);
+    window.removeEventListener("offline", onChange);
+  };
+}
+
+const getSnapshot = () => navigator.onLine;
+/** The server has no connectivity to report; assume online until hydrated. */
+const getServerSnapshot = () => true;
+
+/**
+ * Exposes connectivity to the tree. Post/Tide Log caching is owned by
+ * FeedContext, which seeds and reads the same IndexedDB tables.
+ */
 export function OfflineProvider({ children }: { children: React.ReactNode }) {
-  const [isOnline, setIsOnline] = useState(true);
-
-  useEffect(() => {
-    setIsOnline(navigator.onLine);
-
-    async function sync() {
-      await cachePosts(mockPosts);
-    }
-    sync();
-
-    const goOnline = () => setIsOnline(true);
-    const goOffline = () => setIsOnline(false);
-
-    window.addEventListener("online", goOnline);
-    window.addEventListener("offline", goOffline);
-    return () => {
-      window.removeEventListener("online", goOnline);
-      window.removeEventListener("offline", goOffline);
-    };
-  }, []);
-
-  return (
-    <div data-online={isOnline}>
-      {children}
-    </div>
-  );
+  const isOnline = useOnlineStatus();
+  return <div data-online={isOnline}>{children}</div>;
 }
 
 export function useOnlineStatus(): boolean {
-  const [isOnline, setIsOnline] = useState(true);
-
-  useEffect(() => {
-    setIsOnline(navigator.onLine);
-    const goOnline = () => setIsOnline(true);
-    const goOffline = () => setIsOnline(false);
-    window.addEventListener("online", goOnline);
-    window.addEventListener("offline", goOffline);
-    return () => {
-      window.removeEventListener("online", goOnline);
-      window.removeEventListener("offline", goOffline);
-    };
-  }, []);
-
-  return isOnline;
+  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 }

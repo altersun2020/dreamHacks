@@ -1,181 +1,221 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Package,
-  Store,
-  Wrench,
-} from "lucide-react";
-import { Header } from "@/components/Header";
-import { useOnlineStatus } from "@/components/OfflineProvider";
-import {
-  allocations,
-  directory,
-  gearExchange,
-  HOME_ISLAND,
-} from "@/lib/mock-data";
+import { Package, Store, Wrench } from "lucide-react";
+import { PageBanner } from "@/components/app/PageBanner";
+import { useFeed } from "@/contexts/FeedContext";
+import { allocations, directory, gearExchange } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
 
 type Tab = "directory" | "fairshare" | "gear";
 
-const categoryIcons: Record<string, string> = {
-  business: "🏪",
-  food: "🐟",
-  ride: "🚗",
-  artisan: "🪢",
+/** One word telling you what kind of stall this is, and the tint behind it. */
+const CATEGORY: Record<string, { kind: string; chip: string; tint: string }> = {
+  business: { kind: "Store", chip: "bg-amber-500", tint: "bg-amber-50/90" },
+  food: { kind: "Food", chip: "bg-teal-600", tint: "bg-teal-50/90" },
+  ride: { kind: "Rides", chip: "bg-sky-600", tint: "bg-sky-50/90" },
+  artisan: { kind: "Repairs", chip: "bg-violet-600", tint: "bg-violet-50/90" },
 };
 
-export default function LedgerPage() {
-  const isOnline = useOnlineStatus();
-  const [tab, setTab] = useState<Tab>("directory");
+const TABS: { id: Tab; label: string; icon: typeof Store }[] = [
+  { id: "directory", label: "Shops", icon: Store },
+  { id: "fairshare", label: "Rations", icon: Package },
+  { id: "gear", label: "Borrow", icon: Wrench },
+];
 
-  const tabs: { id: Tab; label: string; icon: typeof Store }[] = [
-    { id: "directory", label: "Directory", icon: Store },
-    { id: "fairshare", label: "Fair Share", icon: Package },
-    { id: "gear", label: "Gear Exchange", icon: Wrench },
-  ];
+export default function LedgerPage() {
+  const { actedPostIds: claimed, commitTo } = useFeed();
+  const [tab, setTab] = useState<Tab>("directory");
 
   return (
     <>
-      <Header
+      <PageBanner
         title="The Island Ledger"
-        subtitle={`${HOME_ISLAND} · businesses, ration & gear`}
-        isOnline={isOnline}
+        blurb="Shops, your ration share, and gear to borrow."
+        motif="market"
       />
-      <main className="mx-auto max-w-lg flex-1 px-4 py-4 pb-24">
-        <div className="mb-5 flex rounded-xl border border-ocean-700/40 bg-ocean-900/50 p-1">
-          {tabs.map(({ id, label, icon: Icon }) => (
-            <button
-              key={id}
-              type="button"
-              onClick={() => setTab(id)}
-              className={cn(
-                "flex flex-1 items-center justify-center gap-1.5 rounded-lg px-2 py-2 text-xs font-medium transition-all",
-                tab === id
-                  ? "bg-seafoam-500/20 text-seafoam-300"
-                  : "text-sand-400 hover:text-sand-200",
-              )}
-            >
-              <Icon className="h-3.5 w-3.5" />
-              {label}
-            </button>
-          ))}
-        </div>
 
-        {tab === "directory" && (
-          <div className="space-y-3">
-            {directory.map((entry) => (
-              <div
+      <div className="mb-5 flex gap-2">
+        {TABS.map(({ id, label, icon: Icon }) => (
+          <button
+            key={id}
+            type="button"
+            onClick={() => setTab(id)}
+            aria-pressed={tab === id}
+            className={cn(
+              "btn flex-1 py-3 text-[14px] !rounded-2xl",
+              tab === id ? "btn-primary" : "btn-ghost",
+            )}
+          >
+            <Icon className="h-4 w-4" />
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {/* Shops — a market grid of stall tiles */}
+      {tab === "directory" && (
+        <div className="grid grid-cols-2 gap-3">
+          {directory.map((entry) => {
+            const cat = CATEGORY[entry.category] ?? CATEGORY.business;
+            return (
+              <article
                 key={entry.id}
-                className="rounded-xl border border-ocean-700/30 bg-ocean-900/40 p-4"
+                className={cn(
+                  "surface-in relative overflow-hidden rounded-3xl border border-white/70 shadow-[0_2px_8px_rgba(6,51,64,0.07)]",
+                  cat.tint,
+                  !entry.available && "opacity-60 saturate-50",
+                )}
               >
-                <div className="mb-1 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span>{categoryIcons[entry.category]}</span>
-                    <h3 className="font-semibold text-sand-100">
-                      {entry.name}
-                    </h3>
-                  </div>
-                  <span
-                    className={cn(
-                      "rounded-full px-2 py-0.5 text-[10px] font-medium",
-                      entry.available
-                        ? "bg-emerald-500/20 text-emerald-300"
-                        : "bg-sand-500/20 text-sand-400",
-                    )}
-                  >
-                    {entry.available ? "Open" : "Closed"}
-                  </span>
-                </div>
-                <p className="text-sm text-sand-400">{entry.description}</p>
-                <p className="mt-1 text-xs text-sand-500">{entry.contact}</p>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {tab === "fairshare" && (
-          <div className="space-y-4">
-            <p className="text-sm text-sand-400">
-              Household <span className="font-mono text-seafoam-300">HH-1042</span>{" "}
-              — reserve your essential supply allocations below.
-            </p>
-            {allocations.map((alloc) => {
-              const remaining = alloc.quota - alloc.reserved;
-              const pct = (alloc.reserved / alloc.quota) * 100;
-              return (
-                <div
-                  key={alloc.id}
-                  className="rounded-xl border border-ocean-700/30 bg-ocean-900/40 p-4"
-                >
-                  <div className="mb-2 flex items-center justify-between">
-                    <h3 className="font-semibold text-sand-100">
-                      {alloc.item}
-                    </h3>
-                    <span className="text-xs text-sand-500">
-                      {alloc.reserved}/{alloc.quota} {alloc.unit}
-                    </span>
-                  </div>
-                  <div className="mb-2 h-2 overflow-hidden rounded-full bg-ocean-800">
-                    <div
-                      className="h-full rounded-full bg-seafoam-500/60 transition-all"
-                      style={{ width: `${pct}%` }}
-                    />
-                  </div>
-                  {alloc.arrivalEta && (
-                    <p className="mb-2 text-xs text-amber-300/80">
-                      🚢 Cargo vessel ETA: {alloc.arrivalEta}
-                    </p>
+                {/* The stall itself, photographed */}
+                {/* eslint-disable-next-line @next/next/no-img-element -- local static asset */}
+                <img
+                  src={entry.photo}
+                  alt=""
+                  loading="lazy"
+                  className="aspect-[4/3] w-full object-cover"
+                />
+                <span
+                  className={cn(
+                    "absolute left-3 top-3 rounded-md px-2 py-1 text-[10px] font-black uppercase tracking-wider text-white",
+                    cat.chip,
                   )}
-                  <button
-                    type="button"
-                    disabled={remaining <= 0}
-                    className={cn(
-                      "w-full rounded-lg py-2 text-sm font-medium",
-                      remaining > 0
-                        ? "bg-seafoam-500/20 text-seafoam-300 hover:bg-seafoam-500/30"
-                        : "bg-ocean-800/50 text-sand-500 cursor-not-allowed",
-                    )}
-                  >
-                    {remaining > 0
-                      ? `Reserve ${remaining} ${alloc.unit}`
-                      : "Fully reserved"}
-                  </button>
-                </div>
-              );
-            })}
-          </div>
-        )}
+                >
+                  {cat.kind}
+                </span>
+                <span
+                  className={cn(
+                    "absolute right-3 top-3 rounded-full px-2 py-1 text-[10px] font-extrabold uppercase text-white",
+                    entry.available ? "bg-emerald-600" : "bg-ink/70",
+                  )}
+                >
+                  {entry.available ? "Open" : "Shut"}
+                </span>
 
-        {tab === "gear" && (
-          <div className="space-y-3">
-            <p className="text-sm text-sand-400">
-              Peer-to-peer lending for underutilized tools and equipment.
-            </p>
-            {gearExchange.map((gear) => (
-              <div
-                key={gear.id}
-                className="rounded-xl border border-ocean-700/30 bg-ocean-900/40 p-4"
-              >
-                <h3 className="font-semibold text-sand-100">{gear.name}</h3>
-                <p className="text-xs text-sand-500">{gear.owner}</p>
-                <p className="mt-1 text-sm text-sand-400">{gear.condition}</p>
-                <div className="mt-2 flex items-center justify-between">
-                  <span className="text-xs text-sand-500">
-                    Available until {gear.availableUntil}
-                  </span>
-                  <button
-                    type="button"
-                    className="rounded-lg bg-seafoam-500/20 px-3 py-1.5 text-xs font-medium text-seafoam-300 hover:bg-seafoam-500/30"
-                  >
-                    Request Loan
-                  </button>
+                <div className="p-3.5">
+                  <p className="text-[17px] font-extrabold leading-tight text-ink">
+                    {entry.name}
+                  </p>
+                  <p className="mt-1 text-[13px] leading-snug text-ink-soft">
+                    {entry.description}
+                  </p>
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </main>
+              </article>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Rations — big quota gauges, nothing like a list */}
+      {tab === "fairshare" && (
+        <div className="space-y-4">
+          <p className="text-[14px] font-semibold text-ink-mute">
+            One share per household · HH-1042
+          </p>
+          {allocations.map((alloc) => {
+            const mine = claimed.has(alloc.id);
+            const reserved = alloc.reserved + (mine ? 1 : 0);
+            const left = alloc.quota - reserved;
+            return (
+              <article
+                key={alloc.id}
+                className="rounded-3xl border-2 border-line bg-surface p-5"
+              >
+                <div className="flex items-end justify-between gap-3">
+                  <div>
+                    <p className="text-[17px] font-extrabold leading-tight text-ink">
+                      {alloc.item}
+                    </p>
+                    {alloc.arrivalEta && (
+                      <p className="mt-0.5 text-[12px] font-semibold text-[#a2620f]">
+                        Cargo vessel · {alloc.arrivalEta}
+                      </p>
+                    )}
+                  </div>
+                  <p className="shrink-0 text-right">
+                    <span className="text-[32px] font-extrabold leading-none tabular-nums text-ink">
+                      {left}
+                    </span>
+                    <span className="ml-1 text-[13px] font-bold text-ink-mute">
+                      {alloc.unit} left
+                    </span>
+                  </p>
+                </div>
+
+                {/* Segmented gauge — reads as a ration, not a progress bar */}
+                <div className="mt-3 flex gap-1">
+                  {Array.from({ length: alloc.quota }).map((_, i) => (
+                    <span
+                      key={i}
+                      className={cn(
+                        "h-3 flex-1 rounded-sm",
+                        i < reserved ? "bg-[#c8871d]" : "bg-line",
+                      )}
+                    />
+                  ))}
+                </div>
+                <p className="mt-1.5 text-[12px] font-semibold text-ink-mute">
+                  {reserved}/{alloc.quota} claimed island-wide
+                </p>
+
+                <button
+                  type="button"
+                  onClick={() => commitTo(alloc.id, `Claimed ${alloc.item}`)}
+                  disabled={mine || left <= 0}
+                  className={cn(
+                    "btn mt-3 w-full py-3 text-[15px]",
+                    mine ? "btn-done" : left > 0 ? "btn-dark" : "",
+                  )}
+                >
+                  {mine ? "Reserved" : left > 0 ? "Claim your share" : "All gone"}
+                </button>
+              </article>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Borrow — a lending shelf */}
+      {tab === "gear" && (
+        <div className="space-y-2">
+
+          {gearExchange.map((gear) => {
+            const mine = claimed.has(gear.id);
+            return (
+              <article
+                key={gear.id}
+                className="flex items-center gap-4 rounded-2xl border-2 border-line bg-surface p-4"
+              >
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-line-soft text-[22px]">
+                  🧰
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="text-[16px] font-extrabold leading-tight text-ink">
+                    {gear.name}
+                  </p>
+                  <p className="text-[12px] text-ink-mute">
+                    {gear.owner} · {gear.condition}
+                  </p>
+                  <p className="mt-0.5 text-[12px] font-semibold text-ink-soft">
+                    Free until {gear.availableUntil}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => commitTo(gear.id, `Borrow ${gear.name}`)}
+                  disabled={mine}
+                  className={cn(
+                    "btn shrink-0 px-4 py-2.5 text-[13px]",
+                    mine ? "btn-done" : "btn-dark",
+                  )}
+                >
+                  {mine ? "Yours" : "Borrow"}
+                </button>
+              </article>
+            );
+          })}
+        </div>
+      )}
     </>
   );
 }

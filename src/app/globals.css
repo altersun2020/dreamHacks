@@ -1,21 +1,165 @@
 @import "tailwindcss";
 
+/*
+  IsleHelp — coastal daylight palette.
+  Gold, blossom (light pink), teal, lagoon (blue) and shell (white/neutral).
+  Legacy ocean-/seafoam-/sand- tokens are remapped onto light-theme values so
+  surfaces that have not been redesigned yet stay legible.
+*/
 :root {
-  --ocean-950: #0a1f2e;
-  --ocean-900: #0c2d44;
-  --ocean-800: #1e4d6b;
-  --ocean-700: #2d6a8a;
-  --seafoam-400: #5eead4;
-  --seafoam-300: #7ee8d0;
-  --seafoam-500: #2dd4bf;
-  --sand-100: #f5e6d3;
-  --sand-200: #e8d5c0;
-  --sand-300: #d4c0a8;
-  --sand-400: #b8a088;
-  --sand-500: #9a8570;
+  /* Shell — neutrals, from paper white to deep slate */
+  --shell-0: #ffffff;
+  --shell-50: #f7fbfc;
+  --shell-100: #eff6f8;
+  --shell-200: #e1edf1;
+  --shell-300: #cbdee5;
+  --shell-400: #a3bfca;
+  --shell-500: #7a9ba9;
+  --shell-600: #5a7986;
+  --shell-700: #415c67;
+  --shell-800: #2a3f48;
+  --shell-900: #16262d;
+
+  /* Teal — primary accent */
+  --teal-50: #e6faf7;
+  --teal-100: #c7f3ec;
+  --teal-200: #8fe7da;
+  --teal-300: #4fd8c4;
+  --teal-400: #1fc5ae;
+  --teal-500: #0fb5a6;
+  --teal-600: #0a9187;
+  --teal-700: #087069;
+  --teal-800: #06534f;
+
+  /* Lagoon — blue, used for ink and structure */
+  --lagoon-50: #eaf4fa;
+  --lagoon-100: #d3e9f5;
+  --lagoon-200: #a9d3ea;
+  --lagoon-300: #6fb3d9;
+  --lagoon-400: #3a93c6;
+  --lagoon-500: #1d7fb8;
+  --lagoon-600: #16638f;
+  --lagoon-700: #0f4a6c;
+  --lagoon-800: #0b3b52;
+  --lagoon-900: #072a3b;
+
+  /* Gold — markets, harvest, warmth */
+  --gold-50: #fdf6e4;
+  --gold-100: #f9e9bf;
+  --gold-200: #f3d688;
+  --gold-300: #edc257;
+  --gold-400: #e8b33c;
+  --gold-500: #d99c24;
+  --gold-600: #b87c18;
+  --gold-700: #915e12;
+
+  /* Palm — the green half of the logo gradient */
+  --palm-50: #eff9ef;
+  --palm-100: #d7f0d8;
+  --palm-200: #aee1b0;
+  --palm-300: #8bd38d;
+  --palm-400: #6fbf6f;
+  --palm-500: #55a957;
+  --palm-600: #418844;
+  --palm-700: #326a34;
+
+  /* Brand ramp — deep lagoon → teal → palm, straight off the logo */
+  --brand-from: #1d8fa8;
+  --brand-mid: #35a79b;
+  --brand-to: #6fbf6f;
+  --brand-ink: #14868c;
+
+  /* Blossom — light pink, community + care */
+  --blossom-50: #fff1f5;
+  --blossom-100: #ffe0ea;
+  --blossom-200: #ffc4d6;
+  --blossom-300: #ff9dbb;
+  --blossom-400: #f87199;
+  --blossom-500: #ee4e7e;
+  --blossom-600: #d02f62;
+  --blossom-700: #a9214c;
+
+  /* --- Legacy aliases, pointed at the community palette --- */
+  --ocean-950: #ccf0f6;
+  --ocean-900: #edfcfe;
+  --ocean-800: #9adfec;
+  --ocean-700: #9adfec;
+  --seafoam-500: #00a5bd;
+  --seafoam-400: #00a5bd;
+  --seafoam-300: #007e91;
+  --sand-100: #063340;
+  --sand-200: #063340;
+  --sand-300: #12586a;
+  --sand-400: #4f95a6;
+  --sand-500: #4f95a6;
 }
 
 @theme inline {
+  --color-shell-0: var(--shell-0);
+  --color-shell-50: var(--shell-50);
+  --color-shell-100: var(--shell-100);
+  --color-shell-200: var(--shell-200);
+  --color-shell-300: var(--shell-300);
+  --color-shell-400: var(--shell-400);
+  --color-shell-500: var(--shell-500);
+  --color-shell-600: var(--shell-600);
+  --color-shell-700: var(--shell-700);
+  --color-shell-800: var(--shell-800);
+  --color-shell-900: var(--shell-900);
+
+  --color-teal-50: var(--teal-50);
+  --color-teal-100: var(--teal-100);
+  --color-teal-200: var(--teal-200);
+  --color-teal-300: var(--teal-300);
+  --color-teal-400: var(--teal-400);
+  --color-teal-500: var(--teal-500);
+  --color-teal-600: var(--teal-600);
+  --color-teal-700: var(--teal-700);
+  --color-teal-800: var(--teal-800);
+
+  --color-lagoon-50: var(--lagoon-50);
+  --color-lagoon-100: var(--lagoon-100);
+  --color-lagoon-200: var(--lagoon-200);
+  --color-lagoon-300: var(--lagoon-300);
+  --color-lagoon-400: var(--lagoon-400);
+  --color-lagoon-500: var(--lagoon-500);
+  --color-lagoon-600: var(--lagoon-600);
+  --color-lagoon-700: var(--lagoon-700);
+  --color-lagoon-800: var(--lagoon-800);
+  --color-lagoon-900: var(--lagoon-900);
+
+  --color-gold-50: var(--gold-50);
+  --color-gold-100: var(--gold-100);
+  --color-gold-200: var(--gold-200);
+  --color-gold-300: var(--gold-300);
+  --color-gold-400: var(--gold-400);
+  --color-gold-500: var(--gold-500);
+  --color-gold-600: var(--gold-600);
+  --color-gold-700: var(--gold-700);
+
+  --color-palm-50: var(--palm-50);
+  --color-palm-100: var(--palm-100);
+  --color-palm-200: var(--palm-200);
+  --color-palm-300: var(--palm-300);
+  --color-palm-400: var(--palm-400);
+  --color-palm-500: var(--palm-500);
+  --color-palm-600: var(--palm-600);
+  --color-palm-700: var(--palm-700);
+
+  --color-brand-from: var(--brand-from);
+  --color-brand-mid: var(--brand-mid);
+  --color-brand-to: var(--brand-to);
+  --color-brand-ink: var(--brand-ink);
+
+  --color-blossom-50: var(--blossom-50);
+  --color-blossom-100: var(--blossom-100);
+  --color-blossom-200: var(--blossom-200);
+  --color-blossom-300: var(--blossom-300);
+  --color-blossom-400: var(--blossom-400);
+  --color-blossom-500: var(--blossom-500);
+  --color-blossom-600: var(--blossom-600);
+  --color-blossom-700: var(--blossom-700);
+
   --color-ocean-950: var(--ocean-950);
   --color-ocean-900: var(--ocean-900);
   --color-ocean-800: var(--ocean-800);
@@ -28,13 +172,15 @@
   --color-sand-300: var(--sand-300);
   --color-sand-400: var(--sand-400);
   --color-sand-500: var(--sand-500);
+
   --font-sans: var(--font-dm-sans), system-ui, sans-serif;
 }
 
 body {
-  background: var(--ocean-950);
-  color: var(--sand-100);
+  background: #f8fafc; /* slate-50 */
+  color: var(--lagoon-800);
   font-family: var(--font-sans);
+  -webkit-tap-highlight-color: transparent;
 }
 
 .scrollbar-hide {
@@ -47,6 +193,22 @@ body {
 
 .safe-bottom {
   padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Unviewed Tide Log ring — gold → blossom → teal */
+.tide-ring-unseen {
+  background: conic-gradient(
+    from 140deg,
+    var(--gold-400),
+    var(--blossom-400),
+    var(--teal-400),
+    var(--lagoon-400),
+    var(--gold-400)
+  );
+}
+
+.tide-ring-seen {
+  background: var(--shell-300);
 }
 
 @keyframes beacon-pulse {
@@ -80,4 +242,645 @@ body {
 
 .beacon-pulse-text {
   animation: beacon-pulse 2s ease-in-out infinite;
+}
+
+@keyframes sheet-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes pop-in {
+  from { opacity: 0; transform: scale(0.96) translateY(6px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.animate-sheet-up { animation: sheet-up 0.28s cubic-bezier(0.32, 0.72, 0, 1); }
+.animate-fade-in { animation: fade-in 0.2s ease-out; }
+.animate-pop-in { animation: pop-in 0.25s cubic-bezier(0.32, 0.72, 0, 1); }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-sheet-up,
+  .animate-fade-in,
+  .animate-pop-in,
+  .beacon-pulse,
+  .beacon-pulse-delayed,
+  .beacon-pulse-border,
+  .beacon-pulse-text {
+    animation: none;
+  }
+}
+
+
+/* ---------------------------------------------------------------- brand */
+
+.brand-gradient {
+  background-image: linear-gradient(
+    115deg,
+    var(--brand-from) 0%,
+    var(--brand-mid) 48%,
+    var(--brand-to) 100%
+  );
+}
+
+.brand-text {
+  background-image: linear-gradient(
+    115deg,
+    var(--brand-from) 0%,
+    var(--brand-mid) 45%,
+    var(--brand-to) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ------------------------------------------------------- 3D isle map */
+
+.map-scene {
+  perspective: 900px;
+  perspective-origin: 50% 50%;
+}
+
+.map-plane {
+  transform-style: preserve-3d;
+  transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.map-plane.is-dragging {
+  transition: none;
+}
+
+/* Water surface: depth wash + a drifting swell */
+.map-water {
+  background:
+    radial-gradient(70% 55% at 50% 35%, #7fd6e8 0%, transparent 70%),
+    radial-gradient(90% 70% at 20% 80%, #2f8fb8 0%, transparent 65%),
+    linear-gradient(180deg, #58bcd6 0%, #2b7fa8 55%, #17567a 100%);
+}
+
+.map-grid {
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.16) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.16) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(60% 60% at 50% 45%, #000 30%, transparent 100%);
+}
+
+@keyframes swell-drift {
+  from { background-position: 0 0, 0 0; }
+  to { background-position: 260px 0, -260px 0; }
+}
+
+.map-swell {
+  background-image:
+    repeating-linear-gradient(102deg, rgba(255,255,255,0.10) 0 3px, transparent 3px 46px),
+    repeating-linear-gradient(78deg, rgba(255,255,255,0.07) 0 2px, transparent 2px 62px);
+  animation: swell-drift 26s linear infinite;
+  mask-image: radial-gradient(70% 70% at 50% 45%, #000 20%, transparent 100%);
+}
+
+/* Marker bobbing, so the pins feel like they float above the water */
+@keyframes marker-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+.marker-bob { animation: marker-bob 3.4s ease-in-out infinite; }
+
+@keyframes ring-ripple {
+  0%   { transform: scale(0.7); opacity: 0.55; }
+  70%  { opacity: 0.12; }
+  100% { transform: scale(1.7); opacity: 0; }
+}
+
+.ring-ripple { animation: ring-ripple 2.8s ease-out infinite; }
+.ring-ripple-late { animation: ring-ripple 2.8s ease-out infinite 1.4s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .map-swell,
+  .marker-bob,
+  .ring-ripple,
+  .ring-ripple-late {
+    animation: none;
+  }
+}
+
+
+/* --------------------------------------------------------- landing waves */
+
+@keyframes wave-slide {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.wave-track {
+  animation-name: wave-slide;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.wave-reverse {
+  animation-direction: reverse;
+}
+
+/* The logo riding the swell */
+@keyframes buoy {
+  0%, 100% { transform: translateY(0) rotate(-2.5deg); }
+  50%      { transform: translateY(-16px) rotate(2.5deg); }
+}
+
+.buoy { animation: buoy 5s ease-in-out infinite; }
+
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.rise-in { animation: rise-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* Sunlight shimmer sweeping the hero */
+@keyframes shimmer {
+  from { transform: translateX(-30%) rotate(8deg); }
+  to   { transform: translateX(130%) rotate(8deg); }
+}
+
+.shimmer { animation: shimmer 11s ease-in-out infinite; }
+
+@keyframes eq {
+  0%, 100% { transform: scaleY(0.4); }
+  50%      { transform: scaleY(1); }
+}
+
+.eq-bar { animation: eq 0.7s ease-in-out infinite; transform-origin: bottom; }
+.eq-bar-2 { animation-delay: 0.18s; }
+.eq-bar-3 { animation-delay: 0.36s; }
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%      { transform: translateY(-12px) rotate(4deg); }
+}
+
+.float-slow { animation: float-slow 7s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .wave-track, .buoy, .rise-in, .shimmer, .eq-bar, .float-slow {
+    animation: none;
+  }
+  .rise-in { opacity: 1; transform: none; }
+}
+
+
+/* ------------------------------------------------- immersive app surface */
+
+:root {
+  --night-950: #04141d;
+  --night-900: #071e2a;
+  --night-800: #0c2f40;
+  --night-700: #123f54;
+}
+
+@theme inline {
+  --color-night-950: var(--night-950);
+  --color-night-900: var(--night-900);
+  --color-night-800: var(--night-800);
+  --color-night-700: var(--night-700);
+}
+
+/* Full-screen snapping feed */
+.snap-feed {
+  scroll-snap-type: y mandatory;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.snap-item {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+/* The blurred colour wash that stands in for a photo */
+.post-wash {
+  filter: blur(46px) saturate(1.35);
+  transform: scale(1.35);
+}
+
+@keyframes pop-heart {
+  0% { transform: scale(1); }
+  45% { transform: scale(1.35); }
+  100% { transform: scale(1); }
+}
+
+.pop-heart { animation: pop-heart 0.45s cubic-bezier(0.34, 1.56, 0.64, 1); }
+
+@keyframes rise-fade {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.rise-fade { animation: rise-fade 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .pop-heart, .rise-fade { animation: none; }
+  .rise-fade { opacity: 1; transform: none; }
+}
+
+
+/* ---------------------------------------------- Stripe-derived motion + depth
+   Durations, easing, stagger and elevation follow DesignMD's Stripe MOTION.md.
+   The hue stays coastal — only the system is borrowed. */
+
+:root {
+  --duration-fast: 150ms;
+  --duration-default: 280ms;
+  --duration-slow: 400ms;
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Layered elevation, so cards read as surfaces rather than outlines */
+  --elev-1: 0 1px 2px rgba(13, 37, 61, 0.06), 0 1px 3px rgba(13, 37, 61, 0.04);
+  --elev-2: 0 2px 4px rgba(13, 37, 61, 0.05), 0 4px 12px rgba(13, 37, 61, 0.06);
+  --elev-3: 0 4px 8px rgba(13, 37, 61, 0.06), 0 12px 28px rgba(13, 37, 61, 0.10);
+}
+
+.elev-1 { box-shadow: var(--elev-1); }
+.elev-2 { box-shadow: var(--elev-2); }
+.elev-3 { box-shadow: var(--elev-3); }
+
+/* Fade + slide: Stripe's default enter (opacity 0→1, translateY 12px→0) */
+@keyframes enter-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.enter-up {
+  animation: enter-up var(--duration-default) var(--ease-out) both;
+}
+
+/* 40ms between list rows, per Stripe's stagger table */
+.stagger > * { animation-delay: calc(var(--i, 0) * 40ms); }
+
+/* Marketing-surface warmth: a soft gradient wash for headers and accents */
+.wash-coastal {
+  background-image:
+    radial-gradient(120% 140% at 0% 0%, #e0f2fe 0%, transparent 55%),
+    radial-gradient(120% 140% at 100% 0%, #d1fae5 0%, transparent 55%),
+    linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.wash-primary {
+  background-image: linear-gradient(135deg, #0284c7 0%, #0891b2 45%, #059669 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .enter-up { animation: none; opacity: 1; transform: none; }
+  .stagger > * { animation-delay: 0ms !important; }
+}
+
+
+/* Slow cloud drift across the sky */
+@keyframes drift {
+  from { transform: translateX(-14vw); }
+  to   { transform: translateX(114vw); }
+}
+
+.drift {
+  animation-name: drift;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+/* Intro: surf floods in from both shores, then withdraws */
+@keyframes flood-left {
+  from { transform: translateX(-105%); }
+  to   { transform: translateX(0); }
+}
+
+@keyframes flood-right {
+  from { transform: translateX(105%); }
+  to   { transform: translateX(0); }
+}
+
+.flood-left  { animation: flood-left  2.2s cubic-bezier(0.33, 0.7, 0.2, 1) both; }
+.flood-right { animation: flood-right 2.2s cubic-bezier(0.33, 0.7, 0.2, 1) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .drift, .flood-left, .flood-right { animation: none; }
+}
+
+
+/* =========================================================================
+   IsleHelp — community palette
+   Warm paper rather than clinical slate; one accent, not a rainbow of pills.
+   ========================================================================= */
+
+:root {
+  /* Chlorine water: bright pool cyan, high chroma, nothing sandy */
+  --paper: #ccf0f6;      /* the pool */
+  --surface: #edfcfe;    /* shallow end — the reading panel */
+  --ink: #063340;        /* deep end */
+  --ink-soft: #12586a;
+  --ink-mute: #4f95a6;
+  --line: #9adfec;
+  --line-soft: #cdf2f8;
+  --accent: #00a5bd;     /* chlorine turquoise */
+  --accent-soft: #c3f0f7;
+  --alert: #e0431f;
+  --alert-soft: #ffe2d9;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-mute: var(--ink-mute);
+  --color-line: var(--line);
+  --color-line-soft: var(--line-soft);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-alert: var(--alert);
+  --color-alert-soft: var(--alert-soft);
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink-soft);
+}
+
+
+/* ===================== motion pass — the app was static ================= */
+
+/* Cards arriving */
+@keyframes surface-in {
+  from { opacity: 0; transform: translateY(18px) scale(0.985); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.surface-in { animation: surface-in .55s cubic-bezier(.16,1,.3,1) both; }
+
+/* Anything that should breathe */
+@keyframes bob {
+  0%,100% { transform: translateY(0); }
+  50%     { transform: translateY(-4px); }
+}
+.bob { animation: bob 3.6s ease-in-out infinite; }
+
+/* Light glinting across a surface */
+@keyframes glint {
+  0%   { transform: translateX(-120%) skewX(-18deg); }
+  60%,100% { transform: translateX(320%) skewX(-18deg); }
+}
+.glint::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 38%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.45), transparent);
+  animation: glint 5.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Caustics — the wobbling light on the bottom of a pool */
+@keyframes caustic {
+  0%   { background-position: 0% 0%, 100% 100%; }
+  50%  { background-position: 40% 30%, 60% 70%; }
+  100% { background-position: 0% 0%, 100% 100%; }
+}
+.caustics {
+  background-image:
+    radial-gradient(60% 40% at 20% 30%, rgba(255,255,255,.45), transparent 60%),
+    radial-gradient(50% 40% at 80% 70%, rgba(255,255,255,.35), transparent 60%);
+  background-size: 180% 180%, 160% 160%;
+  animation: caustic 14s ease-in-out infinite;
+}
+
+/* Bubbles drifting up */
+@keyframes rise {
+  from { transform: translateY(0) scale(1); opacity: .5; }
+  to   { transform: translateY(-120px) scale(1.35); opacity: 0; }
+}
+.bubble { animation: rise linear infinite; }
+
+/* Press feedback everywhere */
+@keyframes press-pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(.94); }
+  100% { transform: scale(1); }
+}
+.press:active { animation: press-pop .22s ease-out; }
+
+/* Counting numbers land with a snap */
+@keyframes count-in {
+  from { opacity: 0; transform: translateY(10px) scale(.9); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.count-in { animation: count-in .5s cubic-bezier(.34,1.56,.64,1) both; }
+
+/* The dive used when crossing to the archipelago */
+@keyframes dive-rush {
+  from { transform: scale(.4); opacity: 0; }
+  50%  { opacity: .9; }
+  to   { transform: scale(2.6); opacity: 0; }
+}
+.dive-rush { animation: dive-rush 1.4s cubic-bezier(.3,0,.2,1) infinite; }
+
+@keyframes net-draw {
+  from { stroke-dashoffset: 240; opacity: 0; }
+  to   { stroke-dashoffset: 0; opacity: 1; }
+}
+.net-draw { stroke-dasharray: 240; animation: net-draw .9s ease-out both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .surface-in, .bob, .glint::after, .caustics, .bubble,
+  .press:active, .count-in, .dive-rush, .net-draw {
+    animation: none;
+  }
+  .surface-in, .count-in { opacity: 1; transform: none; }
+}
+
+
+/* ================= chlorine surface — water, not a flat fill ============= */
+
+/*
+ * The reading panel is a body of water seen from above: a cyan base, caustic
+ * light drifting across it, and a faint ripple weave. Kept low-contrast so
+ * type stays perfectly legible on top.
+ */
+@keyframes caustic-drift-a {
+  0%   { transform: translate3d(-4%, -3%, 0) scale(1.05); }
+  50%  { transform: translate3d(4%, 3%, 0) scale(1.12); }
+  100% { transform: translate3d(-4%, -3%, 0) scale(1.05); }
+}
+@keyframes caustic-drift-b {
+  0%   { transform: translate3d(3%, 2%, 0) scale(1.1); }
+  50%  { transform: translate3d(-3%, -2%, 0) scale(1.04); }
+  100% { transform: translate3d(3%, 2%, 0) scale(1.1); }
+}
+@keyframes ripple-pan {
+  from { background-position: 0 0, 0 0; }
+  to   { background-position: 220px 110px, -180px 90px; }
+}
+
+.pool-surface {
+  position: relative;
+  isolation: isolate;
+  background: linear-gradient(180deg, #f2fdff 0%, #e4f9fd 55%, #d7f4fb 100%);
+}
+
+/* Caustics: two soft light webs drifting over each other */
+.pool-surface::before,
+.pool-surface::after {
+  content: "";
+  position: absolute;
+  inset: -10%;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.pool-surface::before {
+  background:
+    radial-gradient(38% 26% at 22% 18%, rgba(255,255,255,.95), transparent 62%),
+    radial-gradient(30% 22% at 72% 34%, rgba(255,255,255,.8), transparent 62%),
+    radial-gradient(34% 24% at 46% 68%, rgba(255,255,255,.85), transparent 62%),
+    radial-gradient(26% 20% at 84% 82%, rgba(255,255,255,.7), transparent 62%);
+  animation: caustic-drift-a 22s ease-in-out infinite;
+}
+
+.pool-surface::after {
+  background:
+    radial-gradient(28% 20% at 62% 12%, rgba(0,165,189,.14), transparent 64%),
+    radial-gradient(34% 24% at 16% 54%, rgba(0,165,189,.12), transparent 64%),
+    radial-gradient(24% 18% at 88% 46%, rgba(0,165,189,.12), transparent 64%);
+  animation: caustic-drift-b 28s ease-in-out infinite;
+}
+
+/* A faint woven ripple, like light on a pool floor */
+.pool-ripple {
+  background-image:
+    repeating-linear-gradient(102deg, rgba(255,255,255,.55) 0 2px, transparent 2px 26px),
+    repeating-linear-gradient(78deg, rgba(0,165,189,.09) 0 2px, transparent 2px 34px);
+  animation: ripple-pan 40s linear infinite;
+}
+
+/* ==================== buttons that look like buttons ==================== */
+
+/*
+ * Every tappable thing gets a raised edge and a shadow, and drops onto the
+ * page when pressed — so it is obvious what is a control and what is graphic.
+ */
+.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  border-radius: 9999px;
+  font-weight: 800;
+  white-space: nowrap;
+  transition: transform .12s ease, box-shadow .12s ease, background-color .15s ease;
+}
+
+.btn-primary {
+  background: linear-gradient(180deg, #14b8cf 0%, #00a5bd 100%);
+  color: #fff;
+  box-shadow: 0 3px 0 #00788a, 0 6px 14px rgba(0,120,138,.34);
+}
+.btn-primary:hover:not(:disabled) { background: linear-gradient(180deg, #1ec4da 0%, #05b0c8 100%); }
+.btn-primary:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow: 0 0 0 #00788a, 0 2px 6px rgba(0,120,138,.3);
+}
+
+.btn-dark {
+  background: linear-gradient(180deg, #0d5c6d 0%, #063340 100%);
+  color: #fff;
+  box-shadow: 0 3px 0 #04222b, 0 6px 14px rgba(6,51,64,.35);
+}
+.btn-dark:hover:not(:disabled) { background: linear-gradient(180deg, #12707f 0%, #08404f 100%); }
+.btn-dark:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow: 0 0 0 #04222b, 0 2px 6px rgba(6,51,64,.3);
+}
+
+.btn-ghost {
+  background: #ffffff;
+  color: var(--ink);
+  box-shadow: 0 3px 0 #9adfec, 0 5px 12px rgba(6,51,64,.12);
+}
+.btn-ghost:hover:not(:disabled) { background: #f2fdff; }
+.btn-ghost:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow: 0 0 0 #9adfec, 0 2px 5px rgba(6,51,64,.12);
+}
+
+.btn-done {
+  background: #c3f0f7;
+  color: #00788a;
+  box-shadow: inset 0 2px 4px rgba(0,120,138,.18);
+  cursor: default;
+}
+
+.btn:disabled:not(.btn-done) {
+  background: #dcecef;
+  color: #7fa6ae;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pool-surface::before, .pool-surface::after, .pool-ripple { animation: none; }
+  .btn:active { transform: none; }
+}
+
+
+/* ============ panel shore — the island waves, inside the surface ========= */
+
+/*
+ * Two wave bands tiled down the panel and drifting in opposite directions, on
+ * a sky gradient. Keeps the island feeling on the surface that carries text,
+ * while the pool caustics stay in the backdrop behind it.
+ */
+@keyframes shore-drift-back {
+  from { background-position: 0 0; }
+  to   { background-position: 1200px 0; }
+}
+@keyframes shore-drift-front {
+  from { background-position: 0 60px; }
+  to   { background-position: -1200px 60px; }
+}
+
+.panel-shore {
+  background-color: #eefaFD;
+  background-image: linear-gradient(180deg, #eaf8fc 0%, #e2f5fa 100%);
+}
+
+.panel-shore-back,
+.panel-shore-front {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-repeat: repeat;
+  background-size: 1200px 200px;
+}
+
+.panel-shore-back {
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%221200%22%20height%3D%22200%22%20viewBox%3D%220%200%201200%20200%22%3E%3Cpath%20d%3D%22M0%2C96%20C150%2C50%20260%2C140%20400%2C96%20C540%2C54%20660%2C140%20800%2C96%20C940%2C52%201060%2C138%201200%2C92%20L1200%2C200%20L0%2C200%20Z%22%20fill%3D%22%23dff6fb%22%2F%3E%3Cpath%20d%3D%22M0%2C96%20C150%2C50%20260%2C140%20400%2C96%20C540%2C54%20660%2C140%20800%2C96%20C940%2C52%201060%2C138%201200%2C92%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%225%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E");
+  opacity: .75;
+  animation: shore-drift-back 90s linear infinite;
+}
+
+.panel-shore-front {
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%221200%22%20height%3D%22200%22%20viewBox%3D%220%200%201200%20200%22%3E%3Cpath%20d%3D%22M0%2C96%20C150%2C50%20260%2C140%20400%2C96%20C540%2C54%20660%2C140%20800%2C96%20C940%2C52%201060%2C138%201200%2C92%20L1200%2C200%20L0%2C200%20Z%22%20fill%3D%22%23c9eef6%22%2F%3E%3Cpath%20d%3D%22M0%2C96%20C150%2C50%20260%2C140%20400%2C96%20C540%2C54%20660%2C140%20800%2C96%20C940%2C52%201060%2C138%201200%2C92%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%226%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E");
+  opacity: .55;
+  animation: shore-drift-front 62s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel-shore-back, .panel-shore-front { animation: none; }
 }

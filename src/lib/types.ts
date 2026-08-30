@@ -11,6 +11,13 @@ export type FeedScope = "my-isle" | "archipelago";
 
 export type IslandStatus = "surplus" | "urgent" | "event";
 
+export interface Comment {
+  id: string;
+  author: string;
+  body: string;
+  createdAt: string;
+}
+
 export interface Post {
   id: string;
   author: string;
@@ -24,6 +31,11 @@ export interface Post {
   actionCount: number;
   createdAt: string;
   isUrgent?: boolean;
+  /** Emoji stand-in for an attached photo, kept tiny for low-bandwidth mesh sync. */
+  image?: string;
+  comments?: Comment[];
+  /** True for posts composed on this device that have not synced yet. */
+  isLocal?: boolean;
 }
 
 export interface TideLog {
@@ -31,8 +43,16 @@ export interface TideLog {
   author: string;
   label: string;
   mediaType: "photo" | "video" | "text";
+  createdAt: string;
   expiresAt: string;
+  /** Emoji fallback for the frame. */
   preview: string;
+  /** Photograph for the story frame and the ring thumbnail. */
+  photo?: string;
+  /** Caption shown over the story frame. */
+  caption?: string;
+  island?: string;
+  isLocal?: boolean;
 }
 
 export interface Island {
@@ -44,6 +64,14 @@ export interface Island {
   distanceNm: number;
   isHome?: boolean;
   description: string;
+  /** Sister isles sit elsewhere in the world, not in the home archipelago. */
+  isSister?: boolean;
+  region?: string;
+  /** What this isle is short of right now. */
+  needs?: string[];
+  /** What it has spare and will trade or give. */
+  offers?: string[];
+  households?: number;
 }
 
 export interface TradeRequest {
@@ -62,6 +90,7 @@ export interface DirectoryEntry {
   description: string;
   contact: string;
   available: boolean;
+  photo: string;
 }
 
 export interface Allocation {

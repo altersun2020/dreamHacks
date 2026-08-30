@@ -4,8 +4,8 @@
   "description": "Resilient community platform for isolated coastal regions",
   "start_url": "/stream",
   "display": "standalone",
-  "background_color": "#0a1f2e",
-  "theme_color": "#0c2d44",
+  "background_color": "#f7fbfc",
+  "theme_color": "#0fb5a6",
   "orientation": "portrait-primary",
   "icons": [
     {

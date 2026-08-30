@@ -11,7 +11,7 @@ import {
   UserX,
   Waves,
 } from "lucide-react";
-import { Header } from "@/components/Header";
+import { PageBanner } from "@/components/app/PageBanner";
 import { HazardPinCard, IsleMap } from "@/components/IsleMap";
 import { useOnlineStatus } from "@/components/OfflineProvider";
 import { useSOS } from "@/contexts/SOSContext";
@@ -111,20 +111,20 @@ export default function SOSPage() {
 
   return (
     <>
-      <Header
+      <PageBanner
         title="IsleSOS"
-        subtitle={`${HOME_ISLAND} · emergency & crisis alerts`}
-        isOnline={isOnline}
+        blurb="Light a beacon across the archipelago, call for medical or safety help, or pin a hazard on the map."
+        motif="beacon"
       />
       <main className="mx-auto max-w-lg flex-1 px-4 py-4 pb-24">
         {distressIslands.length > 0 && (
           <div className="mb-4 rounded-xl border border-red-500/50 bg-red-500/10 p-3 beacon-pulse-border">
-            <div className="flex items-center gap-2 text-sm font-semibold text-red-300">
+            <div className="flex items-center gap-2 text-sm font-semibold text-red-700">
               <Radio className="h-4 w-4" />
               Active Archipelago Beacon
             </div>
             {distressIslands.map((d) => (
-              <p key={d.islandId} className="mt-1 text-xs text-red-200/80">
+              <p key={d.islandId} className="mt-1 text-xs text-red-700/80">
                 <span className="font-medium">{d.islandName}</span>: {d.reason}
               </p>
             ))}
@@ -141,7 +141,7 @@ export default function SOSPage() {
                 "flex-1 rounded-lg px-2 py-2 text-xs font-medium transition-all",
                 tab === id
                   ? id === "personal"
-                    ? "bg-red-500/25 text-red-300"
+                    ? "bg-red-500/25 text-red-700"
                     : "bg-seafoam-500/20 text-seafoam-300"
                   : "text-sand-400 hover:text-sand-200",
               )}
@@ -166,10 +166,10 @@ export default function SOSPage() {
                     className="flex w-full items-center gap-4 rounded-2xl border border-red-500/30 bg-gradient-to-r from-red-500/15 to-red-900/10 p-4 text-left transition-all hover:border-red-500/50 hover:from-red-500/25 active:scale-[0.98]"
                   >
                     <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-red-500/25">
-                      <Icon className="h-6 w-6 text-red-400" />
+                      <Icon className="h-6 w-6 text-red-600" />
                     </div>
                     <div>
-                      <p className="font-semibold text-red-200">
+                      <p className="font-semibold text-red-800">
                         {getPersonalSOSLabel(type)}
                       </p>
                       <p className="text-xs text-sand-400">{description}</p>
@@ -181,7 +181,7 @@ export default function SOSPage() {
 
             {sosSent && lastAlert && (
               <div className="rounded-xl border border-red-500/40 bg-red-500/10 p-4">
-                <p className="flex items-center gap-2 font-semibold text-red-300">
+                <p className="flex items-center gap-2 font-semibold text-red-700">
                   <MapPin className="h-4 w-4" />
                   SOS Broadcast Sent
                 </p>
@@ -226,7 +226,7 @@ export default function SOSPage() {
           <div className="space-y-5">
             <section className="rounded-2xl border border-ocean-700/30 bg-ocean-900/40 p-4">
               <h2 className="mb-2 flex items-center gap-2 text-sm font-semibold text-sand-200">
-                <Radio className="h-4 w-4 text-red-400" />
+                <Radio className="h-4 w-4 text-red-600" />
                 Archipelago Beacon
               </h2>
               <p className="mb-4 text-sm text-sand-400">
@@ -238,7 +238,7 @@ export default function SOSPage() {
               {homeDistress ? (
                 <div className="space-y-3">
                   <div className="rounded-xl border border-red-500/40 bg-red-500/10 p-3">
-                    <p className="text-sm font-semibold text-red-300">
+                    <p className="text-sm font-semibold text-red-700">
                       🚨 {HOME_ISLAND} — Beacon Active
                     </p>
                     <p className="mt-1 text-sm text-sand-300">{homeDistress.reason}</p>
@@ -319,9 +319,9 @@ export default function SOSPage() {
                     key={d.islandId}
                     className="flex items-start gap-3 rounded-xl border border-red-500/30 bg-red-500/5 p-3"
                   >
-                    <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-red-400" />
+                    <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-red-600" />
                     <div>
-                      <p className="font-semibold text-red-300">{d.islandName}</p>
+                      <p className="font-semibold text-red-700">{d.islandName}</p>
                       <p className="text-sm text-sand-300">{d.reason}</p>
                       <p className="mt-1 text-xs text-sand-500">
                         {d.activatedBy} · {formatRelativeTime(d.activatedAt)}
@@ -418,7 +418,7 @@ export default function SOSPage() {
                         "flex-1 rounded-lg py-1.5 text-xs font-medium capitalize",
                         hazardForm.severity === sev
                           ? sev === "critical"
-                            ? "bg-red-500/25 text-red-300"
+                            ? "bg-red-500/25 text-red-700"
                             : sev === "medium"
                               ? "bg-orange-500/25 text-orange-300"
                               : "bg-yellow-500/25 text-yellow-300"

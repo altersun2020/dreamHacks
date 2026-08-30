@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 512" role="img" aria-label="IsleHelp">
+  <defs>
+    <linearGradient id="lockupBrand" x1="8%" y1="94%" x2="92%" y2="6%">
+      <stop offset="0%" stop-color="#1D8FA8"/>
+      <stop offset="50%" stop-color="#35A79B"/>
+      <stop offset="100%" stop-color="#6FBF6F"/>
+    </linearGradient>
+    <clipPath id="lockupBrandClip">
+      <path d="M256 452 C256 452 92 342 92 228 C92 164 140 116 200 116 C230 116 250 132 256 150 C262 132 282 116 312 116 C372 116 420 164 420 228 C420 342 256 452 256 452 Z"/>
+    </clipPath>
+  </defs>
+
+  <rect x="8" y="8" width="496" height="496" rx="116" fill="#FFFFFF" stroke="#E1EDF1" stroke-width="6"/>
+
+
+  <path d="M256 452 C256 452 92 342 92 228 C92 164 140 116 200 116 C230 116 250 132 256 150 C262 132 282 116 312 116 C372 116 420 164 420 228 C420 342 256 452 256 452 Z" fill="url(#lockupBrand)"/>
+
+  <g clip-path="url(#lockupBrandClip)" stroke="#FFFFFF" stroke-width="26" stroke-linecap="round" fill="none">
+    <path d="M60 292 C112 250 164 330 216 292 C268 254 320 334 372 296 C412 267 442 288 466 306"/>
+    <path d="M60 362 C112 322 164 400 216 362" opacity="0.55"/>
+    <path d="M296 366 C348 328 400 404 452 366" opacity="0.55"/>
+  </g>
+
+  <text x="600" y="330" font-family="DM Sans, system-ui, sans-serif" font-size="168" font-weight="700" fill="#14868C">Isle</text>
+  <text x="880" y="330" font-family="DM Sans, system-ui, sans-serif" font-size="168" font-weight="500" fill="#6FBF6F">Help</text>
+</svg>
