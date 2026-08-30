@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { HandHelping, Ship, Users, X } from "lucide-react";
 import { useFeed } from "@/contexts/FeedContext";
 import type { FeedScope, PostAction, PostTag } from "@/lib/types";
@@ -46,7 +47,7 @@ export function PostComposer({
   const [postScope, setPostScope] = useState<FeedScope>(scope);
   const [saving, setSaving] = useState(false);
 
-  const canPost = title.trim().length > 0 && body.trim().length > 0;
+  const canPost = title.trim().length > 0;
 
   function pickTag(next: PostTag) {
     setTag(next);
@@ -68,7 +69,11 @@ export function PostComposer({
     onClose();
   }
 
-  return (
+  // Portalled: AppShell's `relative z-10` panel is a stacking context, so a
+  // z-index set in here loses to the z-50 tab bar.
+  if (typeof document === "undefined") return null;
+
+  return createPortal(
     <div
       role="dialog"
       aria-modal="true"
@@ -84,11 +89,12 @@ export function PostComposer({
 
       <form
         onSubmit={submit}
-        className="animate-sheet-up relative max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-t-3xl border-t border-shell-200 bg-white p-5 pb-8 shadow-2xl"
+        className="animate-sheet-up relative flex max-h-[92vh] w-full max-w-lg flex-col rounded-t-3xl border-t border-shell-200 bg-white shadow-2xl"
       >
+        <div className="shrink-0 px-5 pt-5">
         <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-shell-300" />
 
-        <div className="mb-4 flex items-center justify-between">
+        <div className="mb-2 flex items-center justify-between">
           <h2 className="text-base font-bold text-lagoon-900">
             Share with your isle
           </h2>
@@ -101,7 +107,10 @@ export function PostComposer({
             <X className="h-5 w-5" />
           </button>
         </div>
+        </div>
 
+        {/* Everything that can grow scrolls; the Post button never does. */}
+        <div className="min-h-0 flex-1 overflow-y-auto px-5 pt-3">
         <fieldset className="mb-4">
           <legend className="mb-2 text-xs font-semibold uppercase tracking-wider text-shell-500">
             Tag
@@ -244,15 +253,25 @@ export function PostComposer({
             ))}
           </div>
         </fieldset>
+        </div>
 
-        <button
-          type="submit"
-          disabled={!canPost || saving}
-          className="w-full rounded-2xl bg-teal-500 py-3 text-sm font-bold text-white shadow-sm shadow-teal-500/30 transition-colors hover:bg-teal-600 disabled:bg-shell-300 disabled:shadow-none"
-        >
-          {saving ? "Posting…" : "Post to the stream"}
-        </button>
+        {/* Pinned to the bottom of the sheet, always in reach */}
+        <div className="shrink-0 border-t border-shell-200 bg-white px-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] pt-4">
+          <button
+            type="submit"
+            disabled={!canPost || saving}
+            className="w-full rounded-2xl bg-teal-500 py-4 text-base font-extrabold text-white shadow-sm shadow-teal-500/30 transition-colors hover:bg-teal-600 disabled:bg-shell-300 disabled:shadow-none"
+          >
+            {saving ? "Posting…" : "Post to the stream"}
+          </button>
+          {!canPost && (
+            <p className="mt-2 text-center text-xs font-semibold text-shell-500">
+              Give it a title to post
+            </p>
+          )}
+        </div>
       </form>
-    </div>
+    </div>,
+    document.body,
   );
 }
