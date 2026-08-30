@@ -1,0 +1,17 @@
+{
+  "name": "IsleHelp",
+  "short_name": "IsleHelp",
+  "description": "Resilient community platform for isolated coastal regions",
+  "start_url": "/stream",
+  "display": "standalone",
+  "background_color": "#0a1f2e",
+  "theme_color": "#0c2d44",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

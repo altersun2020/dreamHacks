@@ -1,0 +1,83 @@
+@import "tailwindcss";
+
+:root {
+  --ocean-950: #0a1f2e;
+  --ocean-900: #0c2d44;
+  --ocean-800: #1e4d6b;
+  --ocean-700: #2d6a8a;
+  --seafoam-400: #5eead4;
+  --seafoam-300: #7ee8d0;
+  --seafoam-500: #2dd4bf;
+  --sand-100: #f5e6d3;
+  --sand-200: #e8d5c0;
+  --sand-300: #d4c0a8;
+  --sand-400: #b8a088;
+  --sand-500: #9a8570;
+}
+
+@theme inline {
+  --color-ocean-950: var(--ocean-950);
+  --color-ocean-900: var(--ocean-900);
+  --color-ocean-800: var(--ocean-800);
+  --color-ocean-700: var(--ocean-700);
+  --color-seafoam-400: var(--seafoam-400);
+  --color-seafoam-300: var(--seafoam-300);
+  --color-seafoam-500: var(--seafoam-500);
+  --color-sand-100: var(--sand-100);
+  --color-sand-200: var(--sand-200);
+  --color-sand-300: var(--sand-300);
+  --color-sand-400: var(--sand-400);
+  --color-sand-500: var(--sand-500);
+  --font-sans: var(--font-dm-sans), system-ui, sans-serif;
+}
+
+body {
+  background: var(--ocean-950);
+  color: var(--sand-100);
+  font-family: var(--font-sans);
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@keyframes beacon-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.4); opacity: 0.2; }
+}
+
+@keyframes beacon-pulse-delayed {
+  0%, 100% { transform: scale(1); opacity: 0.4; }
+  50% { transform: scale(1.6); opacity: 0.1; }
+}
+
+@keyframes beacon-border-pulse {
+  0%, 100% { border-color: rgba(239, 68, 68, 0.5); }
+  50% { border-color: rgba(239, 68, 68, 0.9); }
+}
+
+.beacon-pulse {
+  transform-origin: center;
+  animation: beacon-pulse 2s ease-in-out infinite;
+}
+
+.beacon-pulse-delayed {
+  transform-origin: center;
+  animation: beacon-pulse-delayed 2s ease-in-out infinite 0.5s;
+}
+
+.beacon-pulse-border {
+  animation: beacon-border-pulse 2s ease-in-out infinite;
+}
+
+.beacon-pulse-text {
+  animation: beacon-pulse 2s ease-in-out infinite;
+}
