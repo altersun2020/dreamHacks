@@ -91,7 +91,7 @@ export default function FeedPage() {
       />
 
       {/* Dual view: your isle, or the whole archipelago */}
-      <div className="mb-4 flex rounded-full border border-white/80 bg-[#f7fdfe] p-1 shadow-[0_2px_6px_rgba(6,51,64,0.06)]">
+      <div className="mb-5 flex rounded-full border border-white/80 bg-[#f7fdfe] p-1 shadow-[0_2px_6px_rgba(6,51,64,0.06)]">
         {(
           [
             { id: "my-isle", label: `My Isle`, hint: HOME_ISLAND },
@@ -119,7 +119,7 @@ export default function FeedPage() {
 
       {/* On the water today — the island's ephemeral stuff */}
       {logs.length > 0 && (
-        <section className="mb-4 rounded-2xl border border-white/80 bg-[#f7fdfe]/95 px-4 pt-3 shadow-[0_2px_6px_rgba(6,51,64,0.06)]">
+        <section className="mb-5 rounded-2xl border border-white/80 bg-[#f7fdfe]/95 px-4 pt-3 shadow-[0_2px_6px_rgba(6,51,64,0.06)]">
           <div className="flex gap-4 overflow-x-auto pb-5 scrollbar-hide">
             <button
               type="button"
@@ -185,7 +185,7 @@ export default function FeedPage() {
       <button
         type="button"
         onClick={() => setComposing(true)}
-        className="flex w-full items-center gap-3 rounded-full border border-white/80 bg-[#f7fdfe] px-3 py-3 text-left shadow-[0_3px_0_#9adfec] transition-transform active:translate-y-[3px] active:shadow-none"
+        className="mb-5 flex w-full items-center gap-3 rounded-full border border-white/80 bg-[#f7fdfe] px-3 py-3 text-left shadow-[0_3px_0_#9adfec] transition-transform active:translate-y-[3px] active:shadow-none"
       >
         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-accent text-[13px] font-extrabold text-white">
           {getInitials("You")}
@@ -196,7 +196,7 @@ export default function FeedPage() {
       </button>
 
       {/* A quiet lens, not a row of pills */}
-      <div className="mb-4 flex gap-5 overflow-x-auto rounded-2xl border border-white/80 bg-[#f7fdfe]/95 px-4 py-3 shadow-[0_2px_6px_rgba(6,51,64,0.06)] scrollbar-hide">
+      <div className="mb-5 flex gap-5 overflow-x-auto rounded-2xl border border-white/80 bg-[#f7fdfe]/95 px-4 py-3 shadow-[0_2px_6px_rgba(6,51,64,0.06)] scrollbar-hide">
         {LENSES.map(({ id, label }) => (
           <button
             key={id}
