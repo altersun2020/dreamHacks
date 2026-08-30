@@ -10,6 +10,7 @@ import {
 import { Volume2 } from "lucide-react";
 import { AnimatedShore } from "@/components/AnimatedShore";
 import { useSound } from "@/contexts/SoundContext";
+import { SURF_WAVE, WAVE_VIEWBOX } from "@/lib/wave-path";
 import { cn } from "@/lib/utils";
 
 const SEEN_KEY = "islehelp.intro-seen";
@@ -45,70 +46,58 @@ function getSeen(): boolean {
 
 const getSeenOnServer = () => true;
 
+/**
+ * Furthest band first. Each band's fill is opaque down to its own base, so a
+ * band painted later buries the crest of anything behind it — listing them
+ * nearest-first left only the front crest visible and the rest as flat slabs.
+ */
 const BANDS = [
-  { fill: "#63BCD0", bottom: "0%", height: "46%", drift: "17s" },
-  { fill: "#8AD0DE", bottom: "13%", height: "44%", drift: "23s", rev: true },
-  { fill: "#AEE0EA", bottom: "26%", height: "42%", drift: "31s" },
   { fill: "#CFEDF5", bottom: "38%", height: "40%", drift: "40s", rev: true },
+  { fill: "#AEE0EA", bottom: "26%", height: "42%", drift: "31s" },
+  { fill: "#8AD0DE", bottom: "13%", height: "44%", drift: "23s", rev: true },
+  { fill: "#63BCD0", bottom: "0%", height: "46%", drift: "17s" },
 ];
 
-const SURF_D =
-  "M0,58 C150,18 280,96 430,58 C580,20 700,96 850,58 C1000,20 1120,92 1200,60 L1200,160 L0,160 Z";
-const SURF_CREST =
-  "M0,58 C150,18 280,96 430,58 C580,20 700,96 850,58 C1000,20 1120,92 1200,60";
-
 /**
- * Half of the surf. The water inside each band drifts continuously the whole
- * time, so the sweep in reads as water flowing rather than panels sliding —
- * and every band shares one easing with no stagger, which is what made the
- * earlier version look stepped.
+ * The whole surf, full width, drifting.
+ *
+ * This is rendered twice at exactly the same place and each copy is clipped to
+ * one half of the screen. Because neither copy ever moves relative to the
+ * viewport — only the clip opens — the two halves are always the same wave at
+ * the same offset, so the crest joins perfectly at the midline on every frame.
+ * The earlier version slid two halves inward past each other, which meant the
+ * seam showed a different part of the curve on each side for the whole sweep.
  */
-function WaveBank({ side }: { side: "left" | "right" }) {
+function SurfStack() {
   return (
-    <div
-      className={cn(
-        "absolute bottom-0 h-full w-1/2 overflow-hidden",
-        side === "left" ? "left-0" : "right-0",
-      )}
-    >
+    <div className="absolute inset-0">
       {BANDS.map((band, i) => (
         <div
           key={i}
-          className={cn(
-            "absolute h-full w-[200%]",
-            side === "left" ? "left-0 flood-left" : "right-0 flood-right",
-          )}
+          className="absolute inset-x-0 overflow-hidden"
+          style={{ bottom: band.bottom, height: band.height }}
         >
           <div
-            className="absolute inset-x-0"
-            style={{ bottom: band.bottom, height: band.height }}
+            className={cn("wave-track flex h-full w-[200%]", band.rev && "wave-reverse")}
+            style={{ animationDuration: band.drift }}
           >
-            {/* Two copies sliding on a loop = water that never stops moving */}
-            <div
-              className={cn(
-                "wave-track flex h-full w-[200%]",
-                band.rev && "wave-reverse",
-              )}
-              style={{ animationDuration: band.drift }}
-            >
-              {[0, 1].map((copy) => (
-                <svg
-                  key={copy}
-                  viewBox="0 0 1200 160"
-                  preserveAspectRatio="none"
-                  className="h-full w-1/2 shrink-0"
-                >
-                  <path d={SURF_D} fill={band.fill} />
-                  <path
-                    d={SURF_CREST}
-                    fill="none"
-                    stroke="#FFFFFF"
-                    strokeWidth="5"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              ))}
-            </div>
+            {[0, 1].map((copy) => (
+              <svg
+                key={copy}
+                viewBox={WAVE_VIEWBOX}
+                preserveAspectRatio="none"
+                className="h-full w-1/2 shrink-0"
+              >
+                <path d={SURF_WAVE.fill} fill={band.fill} />
+                <path
+                  d={SURF_WAVE.crest}
+                  fill="none"
+                  stroke="#FFFFFF"
+                  strokeWidth="5"
+                  strokeLinecap="round"
+                />
+              </svg>
+            ))}
           </div>
         </div>
       ))}
@@ -183,12 +172,17 @@ export function IntroCurtain() {
       {flooded && (
         <div
           className={cn(
-            "absolute inset-x-0 bottom-0 h-[56%] transition-all duration-[1100ms] ease-[cubic-bezier(0.65,0,0.35,1)]",
+            "absolute inset-x-0 bottom-0 h-[56%] transition-[transform,opacity] duration-[1100ms] ease-[cubic-bezier(0.65,0,0.35,1)]",
             phase === "lifting" && "translate-y-full opacity-0",
           )}
         >
-          <WaveBank side="left" />
-          <WaveBank side="right" />
+          {/* Two identical stacks, each clipped open from its own shore */}
+          <div className="flood-left absolute inset-0">
+            <SurfStack />
+          </div>
+          <div className="flood-right absolute inset-0">
+            <SurfStack />
+          </div>
         </div>
       )}
 

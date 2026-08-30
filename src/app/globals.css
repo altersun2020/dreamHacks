@@ -374,14 +374,19 @@ body {
 /* --------------------------------------------------------- landing waves */
 
 @keyframes wave-slide {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
 }
 
 .wave-track {
   animation-name: wave-slide;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
+  /* Promote to its own layer: the crest is a wide stroked bezier, and
+     repainting it every frame is what made the surf stutter. */
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .wave-reverse {
@@ -555,22 +560,35 @@ body {
   animation-iteration-count: infinite;
 }
 
-/* Intro: surf floods in from both shores, then withdraws */
+/* Intro: surf floods in from both shores, then withdraws.
+   Each half is one copy of the same full-width surf, clipped open from its own
+   edge. Nothing translates, so the crest stays continuous across the midline
+   for the whole sweep — sliding two halves inward is what broke the seam. */
 @keyframes flood-left {
-  from { transform: translateX(-105%); }
-  to   { transform: translateX(0); }
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 44% 0 0); }
 }
 
 @keyframes flood-right {
-  from { transform: translateX(105%); }
-  to   { transform: translateX(0); }
+  from { clip-path: inset(0 0 0 100%); }
+  to   { clip-path: inset(0 0 0 44%); }
 }
 
-.flood-left  { animation: flood-left  2.2s cubic-bezier(0.33, 0.7, 0.2, 1) both; }
-.flood-right { animation: flood-right 2.2s cubic-bezier(0.33, 0.7, 0.2, 1) both; }
+.flood-left,
+.flood-right {
+  animation-duration: 2.2s;
+  animation-timing-function: cubic-bezier(0.22, 0.61, 0.24, 1);
+  animation-fill-mode: both;
+  will-change: clip-path;
+}
+
+.flood-left  { animation-name: flood-left; }
+.flood-right { animation-name: flood-right; }
 
 @media (prefers-reduced-motion: reduce) {
   .drift, .flood-left, .flood-right { animation: none; }
+  .flood-left  { clip-path: inset(0 44% 0 0); }
+  .flood-right { clip-path: inset(0 0 0 44%); }
 }
 
 

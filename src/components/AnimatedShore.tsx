@@ -1,11 +1,7 @@
 "use client";
 
+import { SHORE_WAVE, WAVE_VIEWBOX } from "@/lib/wave-path";
 import { cn } from "@/lib/utils";
-
-const WAVE_D =
-  "M0,72 C120,30 220,104 340,72 C460,40 560,104 680,72 C800,40 900,104 1020,72 C1120,46 1180,54 1200,62 L1200,160 L0,160 Z";
-const CREST_D =
-  "M0,72 C120,30 220,104 340,72 C460,40 560,104 680,72 C800,40 900,104 1020,72 C1120,46 1180,54 1200,62";
 
 interface Band {
   bottom: number;
@@ -140,13 +136,13 @@ export function AnimatedShore({
             {[0, 1].map((copy) => (
               <svg
                 key={copy}
-                viewBox="0 0 1200 160"
+                viewBox={WAVE_VIEWBOX}
                 preserveAspectRatio="none"
                 className="h-full w-1/2 shrink-0"
               >
-                <path d={WAVE_D} fill={band.fill} />
+                <path d={SHORE_WAVE.fill} fill={band.fill} />
                 <path
-                  d={CREST_D}
+                  d={SHORE_WAVE.crest}
                   fill="none"
                   stroke="#FFFFFF"
                   strokeWidth={band.crestWidth}
@@ -164,7 +160,7 @@ export function AnimatedShore({
             {[0, 1].map((copy) => (
               <svg
                 key={copy}
-                viewBox="0 0 1200 160"
+                viewBox={WAVE_VIEWBOX}
                 preserveAspectRatio="none"
                 className="h-full w-1/2 shrink-0"
               >
@@ -174,9 +170,9 @@ export function AnimatedShore({
                     <stop offset="100%" stopColor="#E2C795" />
                   </linearGradient>
                 </defs>
-                <path d={WAVE_D} fill={`url(#sand-${copy})`} />
+                <path d={SHORE_WAVE.fill} fill={`url(#sand-${copy})`} />
                 <path
-                  d={CREST_D}
+                  d={SHORE_WAVE.crest}
                   fill="none"
                   stroke="#FFFFFF"
                   strokeWidth="6"
